@@ -1,7 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
-import '../utilities/show_error_dialog.dart';
+import 'package:mynotes/services/auth/auth_exception.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
+import 'package:mynotes/utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -55,12 +56,13 @@ class _LoginViewState extends State<LoginView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                await FirebaseAuth.instance.signInWithEmailAndPassword(
+                await AuthService.firebase().logIn(
                   email: email,
                   password: password,
                 );
-                final user = FirebaseAuth.instance.currentUser;
-                if (user?.emailVerified ?? false) {
+
+                final user = AuthService.firebase().currentUser;
+                if (user?.isEmailVerified ?? false) {
                   Navigator.of(context).pushNamedAndRemoveUntil(
                     notesRoute,
                     (route) => false,
@@ -71,33 +73,26 @@ class _LoginViewState extends State<LoginView> {
                     (route) => false,
                   );
                 }
-              } on FirebaseAuthException catch (e) {
-                // print(e.runtimeType); we will get firebaseauthexception
-                //print(e); we will get user-not-found
-                //(e.code);we will get user-not-found
-                if (e.code == 'user-not-found') {
-                  await showErrorDialog(
-                    context,
-                    'User not found',
-                  );
-                } else if (e.code == 'wrong-password') {
-                  await showErrorDialog(
-                    context,
-                    'Wrong Password',
-                  );
-                  // devtools.log("Wrong Password");
-                } else {
-                  await showErrorDialog(
-                    context,
-                    'Error : ${e.code}',
-                  );
-                }
-              } catch (e) {
+              } on UsernotfoundAuthException {
                 await showErrorDialog(
                   context,
-                  e.toString(),
+                  'User not found',
+                );
+              } on WrongPasswordAuthException {
+                await showErrorDialog(
+                  context,
+                  'Wrong Password',
+                );
+              } on GenricAuthException {
+                await showErrorDialog(
+                  context,
+                  'Authentication error',
                 );
               }
+              // print(e.runtimeType); we will get firebaseauthexception
+              //print(e); we will get user-not-found
+              //(e.code);we will get user-not-found
+              //  if (e.code == 'user-not-found')
             },
             child: const Text('Login'),
           ),
