@@ -4,6 +4,7 @@ import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_exception.dart';
 import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
 import 'package:mynotes/services/auth/bloc/auth_event.dart';
+import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import 'package:mynotes/utilities/dialogs/error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -53,34 +54,35 @@ class _LoginViewState extends State<LoginView> {
             autocorrect: false,
             decoration: const InputDecoration(hintText: 'Enter your password'),
           ),
-          TextButton(
-            onPressed: () async {
-              final email = _email.text;
-              final password = _password.text;
-              try {
+          BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) async {
+              if (state is AuthStateLoggedOut) {
+                if (state.exception is UsernotfoundAuthException) {
+                  await showErrorDialog(context, 'User not found');
+                } else if (state.exception is WrongPasswordAuthException) {
+                  await showErrorDialog(context, 'Wrong credentials');
+                } else if (state.exception is GenricAuthException) {
+                  await showErrorDialog(context, 'Authentication error');
+                }
+              }
+            },
+            child: TextButton(
+              onPressed: () async {
+                final email = _email.text;
+                final password = _password.text;
                 context.read<AuthBloc>().add(
                       AuthEventLogIn(
                         email,
                         password,
                       ),
                     );
-              } on WrongPasswordAuthException {
-                await showErrorDialog(
-                  context,
-                  'Wrong Password',
-                );
-              } on GenricAuthException {
-                await showErrorDialog(
-                  context,
-                  'Authentication error',
-                );
-              }
-              // print(e.runtimeType); we will get firebaseauthexception
-              //print(e); we will get user-not-found
-              //(e.code);we will get user-not-found
-              //  if (e.code == 'user-not-found')
-            },
-            child: const Text('Login'),
+                // print(e.runtimeType); we will get firebaseauthexception
+                //print(e); we will get user-not-found
+                //(e.code);we will get user-not-found
+                //  if (e.code == 'user-not-found')
+              },
+              child: const Text('Login'),
+            ),
           ),
           TextButton(
             onPressed: () {
