@@ -52,63 +52,66 @@ class _LoginViewState extends State<LoginView> {
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              TextField(
-                controller: _email,
-                enableSuggestions: false,
-                autocorrect: false,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(hintText: 'Enter your email'),
-              ),
-              TextField(
-                controller: _password,
-                obscureText: true,
-                enableSuggestions: false,
-                autocorrect: false,
-                decoration: const InputDecoration(
-                  hintText: 'Enter your password',
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: _email,
+                  enableSuggestions: false,
+                  autocorrect: false,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration:
+                      const InputDecoration(hintText: 'Enter your email'),
                 ),
-              ),
-              const SizedBox(height: 15),
-              const Text(
-                '(Login to your account to interact with and create notes)',
-                style: TextStyle(fontSize: 15),
-              ),
-              TextButton(
-                onPressed: () async {
-                  final email = _email.text;
-                  final password = _password.text;
-                  context.read<AuthBloc>().add(
-                        AuthEventLogIn(
-                          email,
-                          password,
-                        ),
-                      );
-                  // print(e.runtimeType); we will get firebaseauthexception
-                  //print(e); we will get user-not-found
-                  //(e.code);we will get user-not-found
-                  //  if (e.code == 'user-not-found')
-                },
-                child: const Text('Login'),
-              ),
-              TextButton(
-                onPressed: () {
-                  context.read<AuthBloc>().add(
-                        const AuthEventForgotPassword(),
-                      );
-                },
-                child: const Text('Forgot Password?'),
-              ),
-              TextButton(
-                onPressed: () {
-                  context.read<AuthBloc>().add(
-                        const AuthEventShouldRegister(),
-                      );
-                },
-                child: const Text('Not registered yet? Register here!'),
-              )
-            ],
+                TextField(
+                  controller: _password,
+                  obscureText: true,
+                  enableSuggestions: false,
+                  autocorrect: false,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter your password',
+                  ),
+                ),
+                const SizedBox(height: 15),
+                const Text(
+                  '(Login to your account to interact with and create notes)',
+                  style: TextStyle(fontSize: 15),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    final email = _email.text;
+                    final password = _password.text;
+                    context.read<AuthBloc>().add(
+                          AuthEventLogIn(
+                            email,
+                            password,
+                          ),
+                        );
+                    // print(e.runtimeType); we will get firebaseauthexception
+                    //print(e); we will get user-not-found
+                    //(e.code);we will get user-not-found
+                    //  if (e.code == 'user-not-found')
+                  },
+                  child: const Text('Login'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    context.read<AuthBloc>().add(
+                          const AuthEventForgotPassword(),
+                        );
+                  },
+                  child: const Text('Forgot Password?'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    context.read<AuthBloc>().add(
+                          const AuthEventShouldRegister(),
+                        );
+                  },
+                  child: const Text('Not registered yet? Register here!'),
+                )
+              ],
+            ),
           ),
         ),
       ),
